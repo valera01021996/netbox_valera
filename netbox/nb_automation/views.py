@@ -1,6 +1,7 @@
 from contextlib import nullcontext
 
 import pandas as pd
+import ipaddress
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.db import transaction
@@ -14,7 +15,9 @@ from .forms import ExcelRegionImportForm
 # NetBox/DCIM Region (NetBox 4.x)
 from dcim.models.sites import Region, Site, Location
 from dcim.models.racks import Rack
-from dcim.models.devices import DeviceRole, Manufacturer, DeviceType, Platform, Device
+from dcim.models.devices import DeviceRole, Manufacturer, DeviceType, Platform, Device, Interface
+from ipam.models.vlans import VLAN
+from ipam.models.ip import IPAddress, Prefix
 
 
 class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -51,8 +54,12 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         created_device_types = 0
         created_platforms = 0
         created_devices = 0
+        created_interfaces = 0
+        created_vlans = 0
+        created_ip_addresses = 0
+        created_prefixes = 0
 
-        required_cols = {"Region", "Site", "Location", "Rack", "Role", "Manufacturer", "DeviceType", "Height", "Platform", "DeviceName", "Position"}
+        required_cols = {"Region", "Site", "Location", "Rack", "Role", "Manufacturer", "DeviceType", "Height", "Platform", "DeviceName", "Position", "InterfaceName", "VLAN", "IP", "Mask"}
 
         if not required_cols.issubset(df.columns):
             messages.error(self.request, f"File must include columns: {', ' .join(required_cols)}")
@@ -71,9 +78,12 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             platform_name = str(row["Platform"]).strip()
             device_name = str(row["DeviceName"]).strip()
             position = str(row["Position"]).strip()
-
-
-            if not region_name or not site_name or not location_name or not rack_name or not device_role_name or not manufacturer_name or not device_type_name or not height or not platform_name or not device_name or not position:
+            interface_name = str(row["InterfaceName"]).strip()
+            vlan_id = str(row["VLAN"]).strip()
+            ip_a = str(row["IP"]).strip()
+            mask = str(row["Mask"]).strip()
+            
+            if not region_name or not site_name or not location_name or not rack_name or not device_role_name or not manufacturer_name or not device_type_name or not height or not platform_name or not device_name or not position or not interface_name or not vlan_id or not ip_a or not mask:
                 messages.error(self.request, f"Row {row} is missing required fields. Please check the file and try again.")
                 continue
 
@@ -158,7 +168,58 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             if created_device:
                 created_devices += 1
 
-            
+            interface, created_interface = Interface.objects.get_or_create(
+                name = interface_name,
+                device = device,
+                defaults = {
+                    "type": "1000base-t",
+                    "enabled": True
+                }
+            )
+            if created_interface:
+                created_interfaces += 1
+
+
+            vlan, created_vlan = VLAN.objects.get_or_create(
+                name = interface_name,
+                vid = vlan_id,
+                defaults = {"status": "active"}
+            )
+            if created_vlan:
+                created_vlans += 1
+
+
+            ip_address, created_ip_address = IPAddress.objects.get_or_create(
+                address = ip_a + "/" + mask,
+                defaults = {"status": "active"}
+            )
+            if created_ip_address:
+                created_ip_addresses += 1
+
+            interface.ip_addresses.add(ip_address)
+            interface.save()
+
+            ip_network = ipaddress.ip_network(f"{ip_a}/{mask}", strict=False)
+
+
+            prefix, created_prefix = Prefix.objects.get_or_create(
+                prefix = str(ip_network),
+                vlan = vlan,
+                defaults = {"status": "active"}
+            )
+            if created_prefix:
+                created_prefixes += 1
+
+
+            interface_name_lower = interface_name.lower()
+            if interface_name_lower == "ssh":
+                device.primary_ip4 = ip_address
+                device.save()
+            elif interface_name_lower == "ipmi":
+                device.oob_ip = ip_address
+                device.save()
+
+
         messages.success(
             self.request,
             f"Import finished."
@@ -167,7 +228,12 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             f"device roles: {created_device_roles}, "
             f"manufacturers: {created_manufacturers}, "
             f"device types: {created_device_types}, "
-            f"platforms: {created_platforms}."
+            f"platforms: {created_platforms}, "
+            f"devices: {created_devices}, "
+            f"interfaces: {created_interfaces}, "
+            f"vlans: {created_vlans}, "
+            f"ip addresses: {created_ip_addresses}, "
+            f"prefixes: {created_prefixes}."
         )
 
 
