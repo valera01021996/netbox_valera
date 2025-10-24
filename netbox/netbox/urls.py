@@ -79,16 +79,22 @@ _patterns = [
 # django-debug-toolbar
 if settings.DEBUG:
     import debug_toolbar
+    from django.conf.urls.static import static
     _patterns.append(path('__debug__/', include(debug_toolbar.urls)))
+    # Serve static files in development
+    urlpatterns = [
+        path(settings.BASE_PATH, include(_patterns))
+    ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+else:
+    urlpatterns = [
+        path(settings.BASE_PATH, include(_patterns))
+    ]
 
 # Prometheus metrics
 if settings.METRICS_ENABLED:
     _patterns.append(path('', include('django_prometheus.urls')))
 
-# Prepend BASE_PATH
-urlpatterns = [
-    path(settings.BASE_PATH, include(_patterns))
-]
+# Prepend BASE_PATH - moved to DEBUG section above
 
 handler404 = 'netbox.views.errors.handler_404'
 handler500 = 'netbox.views.errors.handler_500'

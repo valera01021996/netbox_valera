@@ -37,7 +37,7 @@ ORGANIZATION_MENU = Menu(
             ),
         ),
     ),
-)
+)   
 
 RACKS_MENU = Menu(
     label=_('Racks'),
@@ -494,6 +494,22 @@ ADMIN_MENU = Menu(
     ),
 )
 
+AUTOMATION_MENU = Menu(
+    label=_('Automation'),
+    icon_class='mdi mdi-robot',
+    groups=(
+        MenuGroup(
+            label=_('Excel Import'),
+            items=(
+                MenuItem(
+                    link='plugins:nb_automation:excel_upload',
+                    link_text=_('Excel Import'),
+                ),
+            ),
+        ),
+    ),
+)
+
 MENUS = [
     ORGANIZATION_MENU,
     RACKS_MENU,
@@ -507,6 +523,7 @@ MENUS = [
     POWER_MENU,
     PROVISIONING_MENU,
     CUSTOMIZATION_MENU,
+    AUTOMATION_MENU,
     OPERATIONS_MENU,
 ]
 
