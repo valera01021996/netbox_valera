@@ -18,6 +18,7 @@ from dcim.models.racks import Rack
 from dcim.models.devices import DeviceRole, Manufacturer, DeviceType, Platform, Device, Interface
 from ipam.models.vlans import VLAN
 from ipam.models.ip import IPAddress, Prefix
+from tenancy.models import Tenant
 
 
 class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -58,8 +59,9 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         created_vlans = 0
         created_ip_addresses = 0
         created_prefixes = 0
+        created_tenants = 0
 
-        required_cols = {"Region", "Site", "Location", "Rack", "Role", "Manufacturer", "DeviceType", "Height", "Platform", "DeviceName", "Position", "InterfaceName", "VLAN", "IP", "Mask"}
+        required_cols = {"Region", "Tenant", "Site", "Location", "Rack", "Role", "Manufacturer", "DeviceType", "Height", "Platform", "DeviceName", "Position", "InterfaceName", "VLAN", "IP", "Mask"}
 
         if not required_cols.issubset(df.columns):
             messages.error(self.request, f"File must include columns: {', ' .join(required_cols)}")
@@ -82,8 +84,9 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             vlan_id = str(row["VLAN"]).strip()
             ip_a = str(row["IP"]).strip()
             mask = str(row["Mask"]).strip()
+            tenant_name = str(row["Tenant"]).strip()
             
-            if not region_name or not site_name or not location_name or not rack_name or not device_role_name or not manufacturer_name or not device_type_name or not height or not platform_name or not device_name or not position or not interface_name or not vlan_id or not ip_a or not mask:
+            if not region_name or not site_name or not location_name or not rack_name or not device_role_name or not manufacturer_name or not device_type_name or not height or not platform_name or not device_name or not position or not interface_name or not vlan_id or not ip_a or not mask or not tenant_name:
                 messages.error(self.request, f"Row {row} is missing required fields. Please check the file and try again.")
                 continue
 
@@ -110,6 +113,14 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
             if created_location:
                 created_locations += 1
+
+            
+            tenant, created_tenant = Tenant.objects.get_or_create(
+                name = tenant_name,
+                defaults = {"slug": tenant_name.lower().replace(" ", "-")}
+            )
+            if created_tenant:
+                created_tenants += 1
 
             rack, created_racks = Rack.objects.get_or_create(
                 name = rack_name,
@@ -160,6 +171,7 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 device_type = device_type,
                 role = device_role,
                 site = site,
+                tenant = tenant,
                 rack = rack,
                 location = location,
                 position = position,
@@ -220,6 +232,8 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 device.save()
 
 
+
+
         messages.success(
             self.request,
             f"Import finished."
@@ -233,7 +247,8 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             f"interfaces: {created_interfaces}, "
             f"vlans: {created_vlans}, "
             f"ip addresses: {created_ip_addresses}, "
-            f"prefixes: {created_prefixes}."
+            f"prefixes: {created_prefixes}, "
+            f"tenants: {created_tenants}."
         )
 
 

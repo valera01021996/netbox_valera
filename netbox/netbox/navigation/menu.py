@@ -510,6 +510,22 @@ AUTOMATION_MENU = Menu(
     ),
 )
 
+APK_MENU = Menu(
+    label='APK',
+    icon_class='mdi mdi-android',
+    groups=(
+        MenuGroup(
+            label='Services',
+            items=(
+                MenuItem(
+                    link='plugins:apk:apkservice_list',
+                    link_text='APK Services',
+                ),
+            ),
+        ),
+    ),
+)
+
 MENUS = [
     ORGANIZATION_MENU,
     RACKS_MENU,
@@ -525,6 +541,7 @@ MENUS = [
     CUSTOMIZATION_MENU,
     AUTOMATION_MENU,
     OPERATIONS_MENU,
+    APK_MENU,
 ]
 
 # Add top-level plugin menus

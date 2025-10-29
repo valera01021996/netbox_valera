@@ -1,0 +1,33 @@
+{% extends 'base/layout.html' %}
+{% load helpers %}
+
+{% block title %}APK Services{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">APK Services</h1>
+
+  {% if object_list %}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in object_list %}
+      <tr>
+        <td>{{ obj.name }}</td>
+        <td>{{ obj.description }}</td>
+        <td>{{ obj.created|date:"Y-m-d H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No APK Services found.</p>
+  {% endif %}
+</div>
+{% endblock %}
