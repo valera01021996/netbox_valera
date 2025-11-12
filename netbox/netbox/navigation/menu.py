@@ -515,16 +515,38 @@ APK_MENU = Menu(
     icon_class='mdi mdi-android',
     groups=(
         MenuGroup(
-            label='Services',
+            label='APK',
             items=(
                 MenuItem(
-                    link='plugins:apk:apkservice_list',
-                    link_text='APK Services',
+                    link='plugins:apk:apkentry_list',
+                    link_text='APK',
+                ),
+                MenuItem(
+                    link='plugins:apk:apkname_list',
+                    link_text='APK Names',
                 ),
             ),
         ),
     ),
 )
+
+
+DEVICE_SCAN = Menu(
+    label='Device Scan',
+    icon_class = 'mdi mdi-scanner',
+    groups=(
+        MenuGroup(
+            label='Device Scan',
+            items=(
+                MenuItem(
+                    link='plugins:device_scan:devicescan_list',
+                    link_text='Device Scan',
+                ),
+            ),
+        ),
+    ),
+)
+
 
 MENUS = [
     ORGANIZATION_MENU,
@@ -542,6 +564,7 @@ MENUS = [
     AUTOMATION_MENU,
     OPERATIONS_MENU,
     APK_MENU,
+    DEVICE_SCAN,
 ]
 
 # Add top-level plugin menus

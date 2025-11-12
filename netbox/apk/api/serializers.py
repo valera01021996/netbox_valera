@@ -1,8 +1,12 @@
-from rest_framework import serializers
 from netbox.api.serializers import NetBoxModelSerializer
-from ..models import APKService
+from apk.models import APKName, APKEntry
 
-class APKServiceSerializer(NetBoxModelSerializer):
+class APKNameSerializer(NetBoxModelSerializer):
     class Meta:
-        model = APKService
+        model = APKName
+        fields = '__all__'
+
+class APKEntrySerializer(NetBoxModelSerializer):
+    class Meta:
+        model = APKEntry
         fields = '__all__'

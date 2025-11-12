@@ -42,6 +42,8 @@ VERSION = RELEASE.full_version  # Retained for backward compatibility
 # Set the base directory two levels up
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+
 # Validate Python version
 if sys.version_info < (3, 10):
     raise RuntimeError(
@@ -158,6 +160,8 @@ PLUGINS_CATALOG_CONFIG = getattr(configuration, 'PLUGINS_CATALOG_CONFIG', {})
 PROXY_ROUTERS = getattr(configuration, 'PROXY_ROUTERS', ['utilities.proxy.DefaultProxyRouter'])
 QUEUE_MAPPINGS = getattr(configuration, 'QUEUE_MAPPINGS', {})
 REDIS = getattr(configuration, 'REDIS')  # Required
+CELERY_BROKER_URL = getattr(configuration, 'CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = getattr(configuration, 'CELERY_RESULT_BACKEND', None)
 RELEASE_CHECK_URL = getattr(configuration, 'RELEASE_CHECK_URL', None)
 REMOTE_AUTH_AUTO_CREATE_GROUPS = getattr(configuration, 'REMOTE_AUTH_AUTO_CREATE_GROUPS', False)
 REMOTE_AUTH_AUTO_CREATE_USER = getattr(configuration, 'REMOTE_AUTH_AUTO_CREATE_USER', False)

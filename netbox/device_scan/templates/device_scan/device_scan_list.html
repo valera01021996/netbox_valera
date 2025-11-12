@@ -1,0 +1,9 @@
+{% extends 'base/layout.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<h2>🔍 Device Scans</h2>
+<p>Список всех устройств и статусы последних сканирований.</p>
+
+{% render_table table %}
+{% endblock %}
