@@ -1,31 +1,11 @@
-from netbox.forms import NetBoxModelForm, NetBoxModelBulkEditForm
-from django import forms
-from utilities.forms.rendering import FieldSet
-from .models import APKName, APKEntry
+from netbox.forms import NetBoxModelForm
+from .models import APK
 
-class APKNameForm(NetBoxModelForm):
+class APKForm(NetBoxModelForm):
     class Meta:
-        model = APKName
-        fields = ("name", "description")
-
-class APKNameBulkEditForm(NetBoxModelBulkEditForm):
-    model = APKName
-    description = forms.CharField(required=False, widget=forms.Textarea)
-    fieldsets = (FieldSet("description", name="General"),)
-    nullable_fields = ("description",)
-
-
-class APKEntryForm(NetBoxModelForm):
-    class Meta:
-        model = APKEntry
+        model = APK
         fields = (
-            "apk_name", "apk_type", "operator", "contract",
-            "ports_count", "capacity_mbps", "ports_type", "specs",
+            'name', 'type', 'operator', 'region', 'contract',
+            'ttx', 'port_type', 'ports_count', 'capacity',
+            'avg_traffic', 'retention_period',
         )
-
-class APKEntryBulkEditForm(NetBoxModelBulkEditForm):
-    model = APKEntry
-    contract = forms.CharField(required=False)
-    specs = forms.CharField(required=False, widget=forms.Textarea)
-    fieldsets = (FieldSet("contract", "specs", name="General"),)
-    nullable_fields = ("contract", "specs")

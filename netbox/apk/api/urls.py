@@ -1,9 +1,11 @@
 from netbox.api.routers import NetBoxRouter
-from .viewsets import APKNameViewSet, APKEntryViewSet
+
+from . import viewsets
+
+app_name = 'apk-api'
 
 router = NetBoxRouter()
-router.register('apk-names', APKNameViewSet)
-router.register('apk-entries', APKEntryViewSet)
+router.register('apk', viewsets.APKViewSet)
 
-app_name = 'apk'
 urlpatterns = router.urls
+

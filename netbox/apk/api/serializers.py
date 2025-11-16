@@ -1,12 +1,29 @@
 from netbox.api.serializers import NetBoxModelSerializer
-from apk.models import APKName, APKEntry
 
-class APKNameSerializer(NetBoxModelSerializer):
-    class Meta:
-        model = APKName
-        fields = '__all__'
+from ..models import APK
 
-class APKEntrySerializer(NetBoxModelSerializer):
+
+class APKSerializer(NetBoxModelSerializer):
     class Meta:
-        model = APKEntry
-        fields = '__all__'
+        model = APK
+        fields = [
+            'id',
+            'url',
+            'display',
+            'name',
+            'type',
+            'operator',
+            'region',
+            'contract',
+            'ttx',
+            'port_type',
+            'ports_count',
+            'capacity',
+            'avg_traffic',
+            'retention_period',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'tags',
+        ]
+

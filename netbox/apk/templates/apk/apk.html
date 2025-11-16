@@ -1,0 +1,76 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load i18n %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-12 col-xl-6">
+      <div class="card mb-3">
+        <h2 class="card-header">{% trans "APK" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Name" %}</th>
+            <td>{{ object.name|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Type" %}</th>
+            <td>{{ object.type|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Operator" %}</th>
+            <td>{{ object.operator|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Region" %}</th>
+            <td>{{ object.region|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Contract" %}</th>
+            <td>{{ object.contract|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "TTX" %}</th>
+            <td>{{ object.ttx|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Port Type" %}</th>
+            <td>{{ object.port_type|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Ports Count" %}</th>
+            <td>{{ object.ports_count|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Capacity" %}</th>
+            <td>
+              {% if object.capacity %}
+                {{ object.capacity }}
+              {% else %}
+                {{ ''|placeholder }}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Average Traffic" %}</th>
+            <td>
+              {% if object.avg_traffic %}
+                {{ object.avg_traffic }}
+              {% else %}
+                {{ ''|placeholder }}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Retention Period" %}</th>
+            <td>{{ object.retention_period|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+    <div class="col col-12 col-xl-6">
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+  </div>
+{% endblock %}

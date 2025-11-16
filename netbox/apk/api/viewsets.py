@@ -1,11 +1,9 @@
 from netbox.api.viewsets import NetBoxModelViewSet
-from apk.models import APKName, APKEntry
-from .serializers import APKNameSerializer, APKEntrySerializer
 
-class APKNameViewSet(NetBoxModelViewSet):
-    queryset = APKName.objects.all()
-    serializer_class = APKNameSerializer
+from ..models import APK
+from .serializers import APKSerializer
 
-class APKEntryViewSet(NetBoxModelViewSet):
-    queryset = APKEntry.objects.all()
-    serializer_class = APKEntrySerializer
+
+class APKViewSet(NetBoxModelViewSet):
+    queryset = APK.objects.order_by('name', 'pk')
+    serializer_class = APKSerializer

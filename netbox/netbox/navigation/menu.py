@@ -518,12 +518,8 @@ APK_MENU = Menu(
             label='APK',
             items=(
                 MenuItem(
-                    link='plugins:apk:apkentry_list',
+                    link='plugins:apk:apk_list',
                     link_text='APK',
-                ),
-                MenuItem(
-                    link='plugins:apk:apkname_list',
-                    link_text='APK Names',
                 ),
             ),
         ),

@@ -1,60 +1,44 @@
 from django.db import models
-from netbox.models import NetBoxModel
-from tenancy.models import Tenant
 from django.urls import reverse
 from dcim.models import Device
-
-class APKName(NetBoxModel):
-    name = models.CharField("Название АПК", max_length=100, unique=True)
-    description = models.TextField("Описание", blank=True)
+from netbox.models import NetBoxModel
 
 
-    class Meta:
-        verbose_name = "APK Name"
-        verbose_name_plural = "APK Names"
-        ordering = ["name"]
+class APK(NetBoxModel):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=255, blank=True)
+    type = models.CharField(max_length=255, blank=True)
+    operator = models.CharField(max_length=255, blank=True)
+    region = models.CharField(max_length=255, blank=True)
+    contract = models.CharField(max_length=255, blank=True)
+    ttx = models.CharField(max_length=255, blank=True)
+    port_type = models.CharField(max_length=255, blank=True)
+    ports_count = models.CharField(max_length=255, blank=True, null=True)
+    capacity = models.CharField(max_length=255, blank=True, null=True)
+    avg_traffic = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    retention_period = models.CharField(max_length=255, blank=True)
+    CUSTOMFIELD_SLUG = 'APK'
 
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse("plugins:apk:apkname", args=[self.pk])
-
-
-class APKEntry(NetBoxModel):
-    apk_type = models.CharField("Тип АПК", max_length=100)
-    apk_name = models.ForeignKey(APKName, on_delete=models.PROTECT, related_name="entries", verbose_name="APK Name")
-    operator = models.ForeignKey(Tenant, on_delete=models.PROTECT, verbose_name="Оператор", related_name="apk_entries")
-    contract = models.CharField("Договор", max_length=200, blank=True)
-    ports_count = models.IntegerField("Кол-во портов", default=0)
-    capacity_mbps = models.IntegerField("Ёмкость лицензии", default=0)
-    ports_type = models.CharField(
-        "Тип портов",
-        max_length=20
-    )
-    specs = models.CharField("ТТХ", max_length=200)
-
-
-    def devices_qs(self):
-        return Device.objects.filter(
-            custom_field_data__apk_name=self.apk_name_id,
-            tenant_id=self.operator_id,
-        )
-
-    def devices_count(self):
-        return self.devices_qs().count()
+    def __str__(self) -> str:
+        t = (self.type or '').strip()
+        if t.lower() == "drs":
+            return t or "DRS"
+        elif t.lower() == "rubej":
+            return t or "Rubej"
+        else:
+            # если name пустое, чтобы не было "APK  None"
+            n = (self.name or '').strip()
+            r = (self.region or '').strip()
+            if n:
+                return f"{n} {t} {r}".strip()
+            return f"{t}" if t else "APK"
 
 
-    class Meta:
-        verbose_name = "APK Entry"
-        verbose_name_plural = "APK Entries"
-        ordering = ["apk_type", "apk_name", "operator"]
+    def get_devices(self):
+        return Device.objects.filter(**{f'custom_field_data__{self.CUSTOMFIELD_SLUG}': self.pk})
 
-    def __str__(self):
-        return f"{self.apk_name} ({self.apk_type})"
+    def get_device_filter_url(self):
+        return f"{reverse('dcim:device_list')}?cf_{self.CUSTOMFIELD_SLUG}={self.pk}"
 
-    def get_absolute_url(self):
-        return reverse("plugins:apk:apkentry", args=[self.pk])
-
-
+    
 
