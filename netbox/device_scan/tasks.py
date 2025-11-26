@@ -98,6 +98,8 @@ def scan_all_devices_task():
         scan_device_task.delay(dev.id)
         launched += 1
 
+    call_command('calculate_cached_counts')
+
     return {
         "total": total,
         "launched": launched,

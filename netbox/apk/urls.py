@@ -23,3 +23,13 @@ urlpatterns += [
     path('drs/<int:pk>/changelog/', views.APKDRSChangeLogView.as_view(), name='apk_drs_changelog'),
     path('drs/delete/', views.APKDRSBulkDeleteView.as_view(), name='apk_drs_bulk_delete'),
 ]
+
+urlpatterns += [
+    path("rubej/", views.APKRubejListView.as_view(), name="apk_rubej_list"),
+    # path('rubej/add/', views.APKRubejEditView.as_view(), name='apk_rubej_add'),
+    # path('rubej/<int:pk>/', views.APKRubejView.as_view(), name='apk_rubej'),
+    # path('rubej/<int:pk>/edit/', views.APKRubejEditView.as_view(), name='apk_rubej_edit'),
+    # path('rubej/<int:pk>/delete/', views.APKRubejDeleteView.as_view(), name='apk_rubej_delete'),
+    # path('rubej/<int:pk>/changelog/', views.APKRubejChangeLogView.as_view(), name='apk_rubej_changelog'),
+    # path('rubej/delete/', views.APKRubejBulkDeleteView.as_view(), name='apk_rubej_bulk_delete'),
+]

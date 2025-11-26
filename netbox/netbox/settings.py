@@ -943,3 +943,13 @@ try:
     _UNSUPPORTED_SETTINGS = True
 except ImportError:
     pass
+
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'device-scan-every-3m': {
+        'task': 'device_scan.tasks.scan_all_devices_task',
+        'schedule': crontab(minute='*/3')
+    },
+}

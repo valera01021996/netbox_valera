@@ -525,6 +525,10 @@ APK_MENU = Menu(
                     link='plugins:apk:apk_drs_list',
                     link_text='APK DRS',
                 ),
+                MenuItem(
+                    link='plugins:apk:apk_rubej_list',
+                    link_text='APK Rubej',
+                ),
             ),
         ),
     ),

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from netbox.views import generic
 from .models import APK
-from .tables import APKTable, APKDRSTable
+from .tables import APKTable, APKDRSTable, APKRubejTable
 from .forms import APKForm, APKDRSForm
 from netbox.object_actions import AddObject, BulkDelete
 
@@ -77,3 +77,14 @@ class APKDRSChangeLogView(generic.ObjectChangeLogView):
 class APKDRSBulkDeleteView(generic.BulkDeleteView):
     queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
     table = APKDRSTable
+
+
+class APKRubejListView(generic.ObjectListView):
+    queryset = APK.objects.filter(type__iexact='Rubej').order_by('name', 'pk')
+    table = APKRubejTable
+    # actions = (AddAPKRubejObject, BulkDeleteAPKRubej)
+
+
+# class APKRubejEditView(generic.ObjectEditView):
+#     queryset = APK.objects.filter(type__iexact='Rubej').order_by('name', 'pk')
+#     form = APKRubejForm

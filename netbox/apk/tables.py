@@ -37,3 +37,17 @@ class APKDRSTable(NetBoxTable):
         return format_html('<a href="{}">{}</a>', record.get_device_filter_url(), count)
 
         
+
+class APKRubejTable(NetBoxTable):
+    devices = tables.Column(verbose_name=('Devices'), empty_values=())
+    
+    class Meta(NetBoxTable.Meta):
+        model = APK
+        fields = ('pk', 'id', 'name', 'type', 'operator', 'region', 'contract', 'devices')
+        default_columns = ('name', 'type', 'operator', 'region', 'contract', 'devices')
+
+    def render_devices(self, record):
+        count = record.get_devices().count()
+        if count == 0:
+            return '—'
+        return format_html('<a href="{}">{}</a>', record.get_device_filter_url(), count)
