@@ -6,7 +6,7 @@ from .inventory_mapper import map_data_to_inventory
 from vendors.dell.vendor import DellProvider
 from vendors.hp.vendor import HPProvider
 from vendors.huawei.vendor import HuaweiProvider
-
+from django.core.management import call_command
 
 PROVIDERS = {
     "dell": DellProvider,
