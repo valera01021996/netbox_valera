@@ -518,8 +518,12 @@ APK_MENU = Menu(
             label='APK',
             items=(
                 MenuItem(
-                    link='plugins:apk:apk_list',
-                    link_text='APK',
+                    link='plugins:apk:apk_hsi_list',
+                    link_text='APK HSI',
+                ),
+                MenuItem(
+                    link='plugins:apk:apk_drs_list',
+                    link_text='APK DRS',
                 ),
             ),
         ),

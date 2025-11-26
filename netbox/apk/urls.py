@@ -5,11 +5,21 @@ from . import views
 app_name = 'apk'
 
 urlpatterns = [
-    path("", views.APKListView.as_view(), name="apk_list"),
-    path('add/', views.APKEditView.as_view(), name='apk_add'),
-    path('<int:pk>/', views.APKView.as_view(), name='apk'),
-    path('<int:pk>/edit/', views.APKEditView.as_view(), name='apk_edit'),
-    path('<int:pk>/delete/', views.APKDeleteView.as_view(), name='apk_delete'),
-    path('<int:pk>/changelog/', views.APKChangeLogView.as_view(), name='apk_changelog'),
-    path('delete/', views.APKBulkDeleteView.as_view(), name='apk_bulk_delete'),
+    path("hsi/", views.APKHSIListView.as_view(), name="apk_hsi_list"),
+    path('hsi/add/', views.APKHSIEditView.as_view(), name='apk_hsi_add'),
+    path('hsi/<int:pk>/', views.APKHSIView.as_view(), name='apk_hsi'),
+    path('hsi/<int:pk>/edit/', views.APKHSIEditView.as_view(), name='apk_hsi_edit'),
+    path('hsi/<int:pk>/delete/', views.APKHSIDeleteView.as_view(), name='apk_hsi_delete'),
+    path('hsi/<int:pk>/changelog/', views.APKHSIChangeLogView.as_view(), name='apk_hsi_changelog'),
+    path('hsi/delete/', views.APKHSIBulkDeleteView.as_view(), name='apk_hsi_bulk_delete'),
+]
+
+urlpatterns += [
+    path("drs/", views.APKDRSListView.as_view(), name="apk_drs_list"),
+    path('drs/add/', views.APKDRSEditView.as_view(), name='apk_drs_add'),
+    path('drs/<int:pk>/', views.APKDRSView.as_view(), name='apk_drs'),
+    path('drs/<int:pk>/edit/', views.APKDRSEditView.as_view(), name='apk_drs_edit'),
+    path('drs/<int:pk>/delete/', views.APKDRSDeleteView.as_view(), name='apk_drs_delete'),
+    path('drs/<int:pk>/changelog/', views.APKDRSChangeLogView.as_view(), name='apk_drs_changelog'),
+    path('drs/delete/', views.APKDRSBulkDeleteView.as_view(), name='apk_drs_bulk_delete'),
 ]

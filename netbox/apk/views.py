@@ -1,33 +1,79 @@
+from django.urls import reverse
 from netbox.views import generic
 from .models import APK
-from .tables import APKTable
-from .forms import APKForm
+from .tables import APKTable, APKDRSTable
+from .forms import APKForm, APKDRSForm
 from netbox.object_actions import AddObject, BulkDelete
 
 
-class APKListView(generic.ObjectListView):
-    queryset = APK.objects.order_by('name', 'pk')
+class APKHSIListView(generic.ObjectListView):
+    # Показываем только объекты, где type не равен 'DRS'
+    queryset = APK.objects.exclude(type__iexact='DRS').order_by('name', 'pk')
     table = APKTable
     actions = (AddObject, BulkDelete)
 
 
-class APKEditView(generic.ObjectEditView):
-    queryset = APK.objects.order_by('name', 'pk')
+class APKHSIEditView(generic.ObjectEditView):
+    queryset = APK.objects.exclude(type__iexact='DRS').order_by('name', 'pk')
     form = APKForm
 
 
-class APKView(generic.ObjectView):
-    queryset = APK.objects.order_by('name', 'pk')
+class APKHSIView(generic.ObjectView):
+    queryset = APK.objects.exclude(type__iexact='DRS').order_by('name', 'pk')
 
 
-class APKDeleteView(generic.ObjectDeleteView):
-    queryset = APK.objects.order_by('name', 'pk')
+class APKHSIDeleteView(generic.ObjectDeleteView):
+    queryset = APK.objects.exclude(type__iexact='DRS').order_by('name', 'pk')
 
 
-class APKChangeLogView(generic.ObjectChangeLogView):
-    queryset = APK.objects.order_by('name', 'pk')
+class APKHSIChangeLogView(generic.ObjectChangeLogView):
+    queryset = APK.objects.exclude(type__iexact='DRS').order_by('name', 'pk')
 
 
-class APKBulkDeleteView(generic.BulkDeleteView):
-    queryset = APK.objects.order_by('name', 'pk')
+class APKHSIBulkDeleteView(generic.BulkDeleteView):
+    queryset = APK.objects.exclude(type__iexact='DRS').order_by('name', 'pk')
     table = APKTable
+
+
+class AddAPKDRSObject(AddObject):
+    """Кастомный AddObject для APK DRS, который всегда ведет на drs/add"""
+    @classmethod
+    def get_url(cls, obj):
+        return reverse('plugins:apk:apk_drs_add')
+
+
+class BulkDeleteAPKDRS(BulkDelete):
+    """Кастомный BulkDelete для APK DRS, который всегда ведет на drs/delete"""
+    @classmethod
+    def get_url(cls, obj):
+        return reverse('plugins:apk:apk_drs_bulk_delete')
+
+
+class APKDRSListView(generic.ObjectListView):
+    # Показываем только объекты, где type равен 'DRS'
+    queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
+    table = APKDRSTable
+    actions = (AddAPKDRSObject, BulkDeleteAPKDRS)
+
+
+class APKDRSEditView(generic.ObjectEditView):
+    queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
+    form = APKDRSForm
+
+
+class APKDRSView(generic.ObjectView):
+    queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
+    template_name = 'apk/apkdrs.html'
+
+
+class APKDRSDeleteView(generic.ObjectDeleteView):
+    queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
+
+
+class APKDRSChangeLogView(generic.ObjectChangeLogView):
+    queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
+
+
+class APKDRSBulkDeleteView(generic.BulkDeleteView):
+    queryset = APK.objects.filter(type__iexact='DRS').order_by('name', 'pk')
+    table = APKDRSTable
