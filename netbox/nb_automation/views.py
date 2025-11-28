@@ -1,13 +1,9 @@
-from contextlib import nullcontext
-
 import pandas as pd
 import ipaddress
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.text import slugify
 from django.views.generic import FormView
 
 from .forms import ExcelRegionImportForm
@@ -72,7 +68,22 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             region_name = str(row["Region"]).strip()
             site_name = str(row["Site"]).strip()
             location_name = str(row["Location"]).strip()
-            rack_name = str(row["Rack"]).strip()
+            # rack_name = str(row["Rack"]).strip()
+
+
+            raw_rack = str(row["Rack"]).strip()
+            parts = raw_rack.split("-", 1)
+            rack_name = parts[0].strip() if parts else raw_rack
+            rack_u_height = None
+
+            if len(parts) > 1:
+                height_str = parts[1].strip()
+                try:
+                    rack_u_height = int(height_str)
+                except ValueError:
+                    messages.warning(self.request, f"Invalid U height for rack {raw_rack}: {height_str}")
+
+        
             device_role_name = str(row["Role"]).strip()
             manufacturer_name = str(row["Manufacturer"]).strip()
             device_type_name = str(row["DeviceType"]).strip()
@@ -122,13 +133,14 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             if created_tenant:
                 created_tenants += 1
 
-            rack, created_racks = Rack.objects.get_or_create(
+            rack, created_rack = Rack.objects.get_or_create(
                 name = rack_name,
                 site = site,
-                location = location
+                location = location,
+                defaults = {"u_height": rack_u_height} if rack_u_height else {}
             )
 
-            if created_racks:
+            if created_rack:
                 created_racks += 1
 
 

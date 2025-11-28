@@ -952,4 +952,8 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'device_scan.tasks.scan_all_devices_task',
         'schedule': crontab(minute='*/3')
     },
+    'calculate-cached-counts-every-10m': {
+        'task': 'device_scan.tasks.calculate_cached_counts_task',
+        'schedule': crontab(minute='*/10')
+    },
 }

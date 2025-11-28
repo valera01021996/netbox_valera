@@ -45,12 +45,15 @@ class BaseProvider:
 
                 return response.json() if response.content else None
 
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.ConnectionError as e:
                 if attempt < retry - 1:
-                    print(f"   ⚠️  Попытка {attempt + 1}/{retry}, переподключение...")
+                    print(f"   ⚠️ Attempt {attempt + 1}/{retry}, reconnecting...")
                     self._recreate_session()
                 else:
-                    return None
+                    # После всех попыток выбрасываем исключение, чтобы задача могла его обработать
+                    raise requests.exceptions.ConnectionError(
+                        f"Failed to connect to {self.ip_address} after {retry} attempts: {str(e)}"
+                    ) from e
             except Exception:
                 if attempt < retry - 1:
                     continue

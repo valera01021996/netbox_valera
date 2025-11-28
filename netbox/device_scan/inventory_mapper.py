@@ -33,7 +33,7 @@ def upsert_item(device, name, description="", manufacturer=None, serial=""):
 
 def map_data_to_inventory(device, data):
     try:
-        print("-> FANS")
+        # print("-> FANS")
         for fan in data.get("FANS", []):
             if not isinstance(fan, dict):
                 continue
@@ -45,7 +45,7 @@ def map_data_to_inventory(device, data):
 
 
     try:
-        print("-> MEMORY")
+        # print("-> MEMORY")
         memory = data.get("Memory", {})
         for mod in memory.get("Modules", []):
             if not isinstance(mod, dict):
@@ -59,7 +59,7 @@ def map_data_to_inventory(device, data):
 
 
     try:
-        print("-> PSUs")
+        # print("-> PSUs")
         i = 1
         for psu in data.get('PSUs', []):
             if not isinstance(psu, dict):
@@ -74,7 +74,7 @@ def map_data_to_inventory(device, data):
         print(f"❌ Ошибка в PSUs: {e}")
 
     try:
-        print("-> Processors")
+        # print("-> Processors")
         for cpu in data.get('Processors', []):
             if not isinstance(cpu, dict):
                 continue
@@ -86,7 +86,7 @@ def map_data_to_inventory(device, data):
         print(f"❌ Ошибка в Processors: {e}")
 
     try:
-        print("-> RAID Controllers")
+        # print("-> RAID Controllers")
         for controller in data.get('RAID', {}).get('Controllers', []):
             if not isinstance(controller, dict):
                 continue
@@ -99,7 +99,7 @@ def map_data_to_inventory(device, data):
         print(f"❌ Ошибка в RAID Controllers: {e}")
 
     try:
-        print("-> RAID Volumes")
+        # print("-> RAID Volumes")
         for volume in data.get('RAID', {}).get('Volumes', []):
             if not isinstance(volume, dict):
                 continue
@@ -110,7 +110,7 @@ def map_data_to_inventory(device, data):
         print(f"❌ Ошибка в RAID Volumes: {e}")
 
     try:
-        print("-> Storage")
+        # print("-> Storage")
         for disk in data.get('Storage', []):
             if not isinstance(disk, dict):
                 continue

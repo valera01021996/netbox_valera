@@ -26,6 +26,9 @@ class APK(NetBoxModel):
             o = (self.operator or '').strip()
             return f"{t} {r} {o}".strip()
         elif t.lower() == "rubej":
+            r = (self.region or '').strip()
+            o = (self.operator or '').strip()
+            return f"{t} {r} {o}".strip()
             return t or "Rubej"
         else:
             # если name пустое, чтобы не было "APK  None"
@@ -48,6 +51,8 @@ class APK(NetBoxModel):
         # Определяем URL в зависимости от типа
         if self.type and self.type.lower() == 'drs':
             return reverse('plugins:apk:apk_drs', args=[self.pk])
+        elif self.type and self.type.lower() == 'rubej':
+            return reverse('plugins:apk:apk_rubej', args=[self.pk])
         return reverse('plugins:apk:apk_hsi', args=[self.pk])
 
     @classmethod
@@ -61,11 +66,11 @@ class APK(NetBoxModel):
         
         # Если передан pk, проверяем тип объекта
         pk = kwargs.get('pk')
-        is_drs = False
+        obj_type = None
         if pk:
             try:
                 obj = cls.objects.get(pk=pk)
-                is_drs = obj.type and obj.type.lower() == 'drs'
+                obj_type = obj.type.lower() if obj.type else None
             except cls.DoesNotExist:
                 pass
 
@@ -76,7 +81,7 @@ class APK(NetBoxModel):
                 viewname = f'{viewname}-{action}'
         else:
             # Для веб-интерфейса используем кастомные имена URL в зависимости от типа
-            if is_drs:
+            if obj_type == 'drs':
                 action_map = {
                     'list': 'plugins:apk:apk_drs_list',
                     'add': 'plugins:apk:apk_drs_add',
@@ -91,6 +96,21 @@ class APK(NetBoxModel):
                     viewname = action_map.get(action)
                     if viewname is None:
                         viewname = f'plugins:apk:apk_drs_{action}'
+            elif obj_type == 'rubej':
+                action_map = {
+                    'list': 'plugins:apk:apk_rubej_list',
+                    'add': 'plugins:apk:apk_rubej_add',
+                    'edit': 'plugins:apk:apk_rubej_edit',
+                    'delete': 'plugins:apk:apk_rubej_delete',
+                    'changelog': 'plugins:apk:apk_rubej_changelog',
+                    'bulk_delete': 'plugins:apk:apk_rubej_bulk_delete',
+                }
+                if action is None or action == '':
+                    viewname = 'plugins:apk:apk_rubej'
+                else:
+                    viewname = action_map.get(action)
+                    if viewname is None:
+                        viewname = f'plugins:apk:apk_rubej_{action}'
             else:
                 action_map = {
                     'list': 'plugins:apk:apk_hsi_list',

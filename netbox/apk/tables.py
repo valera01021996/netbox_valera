@@ -43,8 +43,8 @@ class APKRubejTable(NetBoxTable):
     
     class Meta(NetBoxTable.Meta):
         model = APK
-        fields = ('pk', 'id', 'name', 'type', 'operator', 'region', 'contract', 'devices')
-        default_columns = ('name', 'type', 'operator', 'region', 'contract', 'devices')
+        fields = ('pk', 'id', 'type', 'operator', 'region', 'contract', 'devices')
+        default_columns = ('type', 'operator', 'region', 'contract', 'devices')
 
     def render_devices(self, record):
         count = record.get_devices().count()

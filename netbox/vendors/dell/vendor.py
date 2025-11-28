@@ -71,7 +71,7 @@ class DellProvider(BaseProvider):
         Returns:
             dict: словарь с информацией о системе
         """
-        logger.info("📊 Получение информации о системе...")
+        logger.info(f"📊 Получение информации о системе host {self.ip_address}")
         
         system_id = self._find_system_id()
         data = self._get(f"/redfish/v1/Systems/{system_id}")
@@ -97,7 +97,7 @@ class DellProvider(BaseProvider):
         Returns:
             list: список процессоров
         """
-        logger.info("🖥️  Получение информации о процессорах...")
+        logger.info(f"🖥️  Получение информации о процессорах... host {self.ip_address}")
         
         processors = []
         system_id = self._find_system_id()
@@ -105,7 +105,7 @@ class DellProvider(BaseProvider):
         data = self._get(f"/redfish/v1/Systems/{system_id}/Processors")
         
         if not data:
-            logger.warning("⚠️  Не удалось получить информацию о процессорах")
+            logger.warning(f"⚠️  Не удалось получить информацию о процессорах host {self.ip_address}")
             return processors
         
         # Получаем список процессоров
@@ -143,7 +143,7 @@ class DellProvider(BaseProvider):
             }
             processors.append(processor)
         
-        print(f"   ✅ Найдено процессоров: {len(processors)}")
+        print(f"   ✅ Найдено процессоров: {len(processors)} host {self.ip_address}")
         return processors
     
     def get_memory_info(self):
@@ -153,7 +153,7 @@ class DellProvider(BaseProvider):
         Returns:
             dict: информация о памяти
         """
-        print("\n💾 Получение информации о памяти...")
+        print(f"\n💾 Получение информации о памяти host {self.ip_address}")
         
         memory_modules = []
         total_memory_gb = 0
@@ -162,7 +162,7 @@ class DellProvider(BaseProvider):
         data = self._get(f"/redfish/v1/Systems/{system_id}/Memory")
         
         if not data:
-            print("   ⚠️  Не удалось получить информацию о памяти")
+            print(f"   ⚠️  Не удалось получить информацию о памяти host {self.ip_address}")
             return {"Всего памяти (GB)": 0, "Модули": []}
         
         members = data.get("Members", [])
@@ -204,7 +204,7 @@ class DellProvider(BaseProvider):
             }
             memory_modules.append(module)
         
-        print(f"   ✅ Найдено модулей памяти: {len(memory_modules)}, всего: {round(total_memory_gb, 2)} GB")
+        print(f"   ✅ Найдено модулей памяти: {len(memory_modules)}, всего: {round(total_memory_gb, 2)} GB host {self.ip_address}")
         
         return {
             "Total_memory (GB)": round(total_memory_gb, 2),
@@ -218,7 +218,7 @@ class DellProvider(BaseProvider):
         Returns:
             list: список дисков
         """
-        print("\n💿 Получение информации о хранилище...")
+        print(f"\n💿 Получение информации о хранилище host {self.ip_address}")
         
         drives = []
         system_id = self._find_system_id()
@@ -227,7 +227,7 @@ class DellProvider(BaseProvider):
         data = self._get(f"/redfish/v1/Systems/{system_id}/Storage")
         
         if not data or not data.get("Members"):
-            print("   ⚠️  Не удалось получить информацию о хранилище")
+            print(f"   ⚠️  Не удалось получить информацию о хранилище host {self.ip_address}")
             return drives
         
         for storage_member in data.get("Members", []):
@@ -246,7 +246,7 @@ class DellProvider(BaseProvider):
             drives_list = storage.get("Drives", [])
             total_drives = len(drives_list)
             if total_drives > 0:
-                print(f"   📀 Контроллер: {controller_name}, дисков: {total_drives}")
+                print(f"   📀 Контроллер: {controller_name}, дисков: {total_drives} host {self.ip_address}")
             
             for idx, drive_ref in enumerate(drives_list, 1):
                 drive_href = self._get_first_href(drive_ref)
@@ -261,7 +261,7 @@ class DellProvider(BaseProvider):
                     if drive:
                         drives.append(drive)
         
-        print(f"   ✅ Найдено дисков: {len(drives)}")
+        print(f"   ✅ Найдено дисков: {len(drives)} host {self.ip_address}")
         return drives
     
     def _normalize_drive(self, drive_data, controller_name):
@@ -298,7 +298,7 @@ class DellProvider(BaseProvider):
         Returns:
             dict: информация о контроллерах и томах
         """
-        print("\n🔧 Получение информации о RAID...")
+        print(f"\n🔧 Получение информации о RAID... host {self.ip_address}")
         
         controllers = []
         volumes = []
@@ -381,7 +381,7 @@ class DellProvider(BaseProvider):
                     }
                     volumes.append(volume)
         
-        print(f"   ✅ Контроллеров: {len(controllers)}, RAID массивов: {len(volumes)}")
+        print(f"   ✅ Контроллеров: {len(controllers)}, RAID массивов: {len(volumes)} host {self.ip_address}")
         
         return {"Controllers": controllers, "Volumes": volumes}
     
@@ -392,7 +392,7 @@ class DellProvider(BaseProvider):
         Returns:
             list: список блоков питания
         """
-        print("\n🔌 Получение информации о блоках питания...")
+        print(f"\n🔌 Получение информации о блоках питания host {self.ip_address}")
         
         power_supplies = []
         
@@ -400,7 +400,7 @@ class DellProvider(BaseProvider):
         power_data = self._get("/redfish/v1/Chassis/System.Embedded.1/Power")
         
         if not power_data:
-            print("   ⚠️  Информация о блоках питания недоступна")
+            print(f"   ⚠️  Информация о блоках питания недоступна {self.ip_address}")
             return power_supplies
         
         # Извлекаем блоки питания
@@ -425,7 +425,7 @@ class DellProvider(BaseProvider):
             }
             power_supplies.append(supply)
         
-        print(f"   ✅ Найдено блоков питания: {len(power_supplies)}")
+        print(f"   ✅ Найдено блоков питания: {len(power_supplies)} host {self.ip_address}")
         
         return power_supplies
     
@@ -436,7 +436,7 @@ class DellProvider(BaseProvider):
         Returns:
             list: список вентиляторов
         """
-        print("\n🌀 Получение информации о вентиляторах...")
+        print(f"\n🌀 Получение информации о вентиляторах host {self.ip_address}")
         
         fans = []
         
@@ -444,7 +444,7 @@ class DellProvider(BaseProvider):
         thermal_data = self._get("/redfish/v1/Chassis/System.Embedded.1/Thermal")
         
         if not thermal_data:
-            print("   ⚠️  Информация о вентиляторах недоступна")
+            print(f"   ⚠️  Информация о вентиляторах недоступна host {self.ip_address}")
             return fans
         
         # Извлекаем вентиляторы
@@ -465,7 +465,7 @@ class DellProvider(BaseProvider):
             }
             fans.append(fan_info)
         
-        print(f"   ✅ Найдено вентиляторов: {len(fans)}")
+        print(f"   ✅ Найдено вентиляторов: {len(fans)} host {self.ip_address}")
         
         return fans
     
@@ -476,7 +476,7 @@ class DellProvider(BaseProvider):
         Returns:
             dict: полный инвентарь сервера
         """
-        print(f"\n🔍 Сбор информации о сервере Dell {self.ip_address}...")
+        print(f"\n🔍 Сбор информации о сервере Dell host {self.ip_address}...")
         
         inventory = {
             "ip_address": self.ip_address,

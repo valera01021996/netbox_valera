@@ -22,6 +22,9 @@ VENDOR_CREDENTIALS = {
 }
 
 
+@shared_task
+def calculate_cached_counts_task():
+    call_command('calculate_cached_counts')
 
 
 @shared_task
@@ -53,7 +56,7 @@ def scan_device_task(device_id):
         if not provider_class:
             raise Exception(f"Provider for {manufacturer} is not found")
 
-        print(f"Using {manufacturer} provider")
+        calculate_cached_counts_task.apply_async(countdown=600)  # 10 минут    print(f"Using {manufacturer} provider")
 
         creds = VENDOR_CREDENTIALS.get(manufacturer, {})
         username = creds.get("username")
@@ -63,6 +66,11 @@ def scan_device_task(device_id):
         provider = provider_class(ip, username, password)
         # provider = DellProvider(ip, "root", "UzMaster2021")
         data = provider.get_all_inventory()
+        
+        # Проверяем, что получены хотя бы базовые данные (System info)
+        if not data or not data.get("System"):
+            raise Exception("Failed to retrieve basic system information. The device may be unavailable or the IP address may be incorrect.")
+        
         map_data_to_inventory(device, data)
         scan.status = "OK"
 
@@ -98,10 +106,12 @@ def scan_all_devices_task():
         scan_device_task.delay(dev.id)
         launched += 1
 
-    call_command('calculate_cached_counts')
 
     return {
         "total": total,
         "launched": launched,
     }
+
+
+
 
