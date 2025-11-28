@@ -56,8 +56,9 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         created_ip_addresses = 0
         created_prefixes = 0
         created_tenants = 0
+        created_rack_face = 0
 
-        required_cols = {"Region", "Tenant", "Site", "Location", "Rack", "Role", "Manufacturer", "DeviceType", "Height", "Platform", "DeviceName", "Position", "InterfaceName", "VLAN", "IP", "Mask"}
+        required_cols = {"Region", "Tenant", "Site", "Location", "Rack", "RackFace", "Role", "Manufacturer", "DeviceType", "Height", "Platform", "DeviceName", "Position", "InterfaceName", "VLAN", "IP", "Mask"}
 
         if not required_cols.issubset(df.columns):
             messages.error(self.request, f"File must include columns: {', ' .join(required_cols)}")
@@ -83,7 +84,7 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 except ValueError:
                     messages.warning(self.request, f"Invalid U height for rack {raw_rack}: {height_str}")
 
-        
+            rack_face = str(row["RackFace"]).strip()
             device_role_name = str(row["Role"]).strip()
             manufacturer_name = str(row["Manufacturer"]).strip()
             device_type_name = str(row["DeviceType"]).strip()
@@ -97,7 +98,7 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             mask = str(row["Mask"]).strip()
             tenant_name = str(row["Tenant"]).strip()
             
-            if not region_name or not site_name or not location_name or not rack_name or not device_role_name or not manufacturer_name or not device_type_name or not height or not platform_name or not device_name or not position or not interface_name or not vlan_id or not ip_a or not mask or not tenant_name:
+            if not region_name or not site_name or not location_name or not rack_name or not rack_face or not device_role_name or not manufacturer_name or not device_type_name or not height or not platform_name or not device_name or not position or not interface_name or not vlan_id or not ip_a or not mask or not tenant_name:
                 messages.error(self.request, f"Row {row} is missing required fields. Please check the file and try again.")
                 continue
 
@@ -144,6 +145,8 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 created_racks += 1
 
 
+
+
             device_role, created_device_role = DeviceRole.objects.get_or_create(
                 name = device_role_name,
                 defaults = {"slug": device_role_name.lower().replace(" ", "-"),
@@ -185,6 +188,7 @@ class ExcelUploadView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
                 site = site,
                 tenant = tenant,
                 rack = rack,
+                face = rack_face,
                 location = location,
                 position = position,
                 platform = platform
